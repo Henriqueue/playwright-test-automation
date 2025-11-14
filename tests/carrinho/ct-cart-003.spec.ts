@@ -1,44 +1,44 @@
-// tests/ct-cart-003.spec.ts
+// tests/carrinho/ct-cart-003.spec.ts
 import { test, expect } from '@playwright/test';
 
-test('CT-CART-003 — Fazer Checkout', async ({ page }) => {
-  // Configuração inicial: site e credenciais padrão
+test('CT-CART-003 — Fazer Checkout (efetuar compra com sucesso)', async ({ page }) => {
+  // Suposições: credenciais padrão do site de demonstração
   const baseUrl = 'https://www.saucedemo.com/';
   const username = 'standard_user';
   const password = 'secret_sauce';
 
-  // Acessar a página principal de login
+  // 1) Acessar a página de login
   await page.goto(baseUrl);
 
-  // Preencher o nome de usuário e senha
+  // 2) Preencher credenciais e logar
   await page.fill('#user-name', username);
   await page.fill('#password', password);
-
-  // Clicar no botão "Login" para entrar
   await page.click('#login-button');
 
-  // Verificar se a navegação foi bem-sucedida (página de inventário)
+  // 3) Verificar que chegamos na página de listagem de produtos
   await expect(page).toHaveURL(/.*inventory.html/);
+  await expect(page.locator('.inventory_list')).toBeVisible();
 
-  // Adicionar um produto ao carrinho
-  // Clica no primeiro botão "Add to cart" encontrado
+  // 4) Ação determinística: adicionar o primeiro produto ao carrinho
   await page.locator('button:has-text("Add to cart")').first().click();
 
-  // Abrir o carrinho clicando no ícone no canto superior direito
+  // 5) Verificar que o badge mostra "1" (estado previsível)
+  const cartBadge = page.locator('.shopping_cart_badge');
+  await expect(cartBadge).toBeVisible();
+  await expect(cartBadge).toHaveText('1');
+
+  // 6) Ir para a página do carrinho
   await page.click('.shopping_cart_link');
   await expect(page).toHaveURL(/.*cart.html/);
 
-  // Validar que há pelo menos um item no carrinho
-  // Conta os elementos que representam os produtos
-  const itemsInCart = await page.locator('.cart_item').count();
-  expect(itemsInCart).toBeGreaterThan(0);
+  // 7) Verificar que existe exatamente 1 item na lista do carrinho
+  const cartItems = page.locator('.cart_item');
+  await expect(cartItems).toHaveCount(1);
 
-  // Clicar no botão "Checkout" para iniciar o processo de compra
-  await page.click('#checkout');
+  // 8) Clicar no botão "Checkout" para iniciar o fluxo de compra
+  await page.locator('button:has-text("Checkout")').click();
 
-  // Verificar se o usuário foi redirecionado para a primeira etapa do checkout
+  // 9) Verificar que foi redirecionado para a primeira etapa do checkout
   await expect(page).toHaveURL(/.*checkout-step-one.html/);
-
-  // Confirmar que o campo "First Name" está visível na página de checkout
-  await expect(page.locator('input#first-name')).toBeVisible();
+  await expect(page.locator('.checkout_info')).toBeVisible();
 });

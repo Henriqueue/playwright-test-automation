@@ -1,32 +1,50 @@
-// tests/ct-cart-001.spec.ts
+// tests/carrinho/ct-cart-001.spec.ts
 import { test, expect } from '@playwright/test';
 
-test('CT-CART-001 — Acessar página de Carrinho', async ({ page }) => {
-  // Definição da URL base e credenciais do usuário de teste
+test('CT-CART-001 — Remover item do carrinho', async ({ page }) => {
+  // Suposições: credenciais padrão do site de demonstração
   const baseUrl = 'https://www.saucedemo.com/';
   const username = 'standard_user';
   const password = 'secret_sauce';
 
-  // Acessar o site de login da aplicação
+  // 1) Acessar a página de login
   await page.goto(baseUrl);
 
-  // Inserir o nome de usuário e senha válidos
+  // 2) Preencher credenciais e logar
   await page.fill('#user-name', username);
   await page.fill('#password', password);
-
-  // Clicar no botão de login
   await page.click('#login-button');
 
-  // Verificar se o login foi bem-sucedido
-  // A URL deve mudar para "inventory.html" (listagem de produtos)
+  // 3) Verificar que chegamos na página de listagem de produtos
   await expect(page).toHaveURL(/.*inventory.html/);
+  await expect(page.locator('.inventory_list')).toBeVisible();
 
-  // Clicar no ícone do carrinho (canto superior direito)
+  // 4) Ação determinística: sempre adicionar o primeiro produto ao carrinho
+  // Assim garantimos a pré-condição sem depender do estado anterior.
+  const firstAddButton = page.locator('button:has-text("Add to cart")').first();
+  await firstAddButton.click();
+
+  // 5) Verificar que o badge do carrinho mostra exatamente "1"
+  // (estado conhecido — adicionamos exatamente 1 item)
+  const cartBadge = page.locator('.shopping_cart_badge');
+  await expect(cartBadge).toBeVisible();
+  await expect(cartBadge).toHaveText('1');
+
+  // 6) Ir para a página do carrinho
   await page.click('.shopping_cart_link');
-
-  // Verificar se a página do carrinho foi aberta
   await expect(page).toHaveURL(/.*cart.html/);
-
-  // Confirmar se o elemento com a lista de itens do carrinho está visível
   await expect(page.locator('.cart_list')).toBeVisible();
+
+  // 7) Verificar que existe exatamente 1 item na lista do carrinho (pré-condição estabelecida acima)
+  const cartItems = page.locator('.cart_item');
+  await expect(cartItems).toHaveCount(1);
+
+  // 8) Clicar em "Remove" do item que adicionamos
+  await page.locator('button:has-text("Remove")').first().click();
+
+  // 9) Resultado esperado (determinístico):
+  // Como adicionamos exatamente 1 item, após remover a lista deve ficar com 0 itens
+  // e o badge do carrinho deve desaparecer.
+  await expect(cartItems).toHaveCount(0);
+  await expect(cartBadge).not.toBeVisible();
 });
