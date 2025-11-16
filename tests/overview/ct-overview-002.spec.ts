@@ -15,31 +15,36 @@ test('CT-OVERVIEW-002 — Finalizar a compra', async ({ page }) => {
 
   // 2) Adicionar um produto ao carrinho
   await page.locator('button:has-text("Add to cart")').first().click();
-  await page.click('.shopping_cart_link');
+  const cartBadge = page.locator('.shopping_cart_badge');
+  await expect(cartBadge).toHaveText('1');
 
-  // 3) Prosseguir para Checkout
+  // 3) Ir para o carrinho
+  await page.click('.shopping_cart_link');
+  await expect(page).toHaveURL(/.*cart.html/);
+
+  // 4) Prosseguir para Checkout
   await page.click('button:has-text("Checkout")');
   await expect(page).toHaveURL(/.*checkout-step-one.html/);
 
-  // 4) Preencher as informações do cliente
-  await page.fill('#first-name', 'Maria');
-  await page.fill('#last-name', 'Fernandes');
+  // 5) Preencher as informações do cliente
+  await page.fill('#first-name', 'Caio');
+  await page.fill('#last-name', 'Dias');
   await page.fill('#postal-code', '50000-000');
   await page.click('input[type="submit"]');
 
-  // 5) Confirmar que estamos na página de Overview
+  // 6) Confirmar que estamos na página de Overview
   await expect(page).toHaveURL(/.*checkout-step-two.html/);
   await expect(page.locator('.summary_info')).toBeVisible();
 
-  // 6) Clicar em “Finish”
+  // 7) Finalizar compra
   await page.click('button:has-text("Finish")');
 
-  // 7) Verificar mensagem de sucesso
+  // 8) Verificar mensagem de sucesso
   const thankYouMessage = page.locator('.complete-header');
   await expect(thankYouMessage).toBeVisible();
   await expect(thankYouMessage).toHaveText('Thank you for your order!');
 
-  // 8) (Opcional) Verificar que o botão "Back Home" aparece
+  // 9) (Opcional) Verificar que o botão "Back Home" aparece
   const backHomeButton = page.locator('button:has-text("Back Home")');
   await expect(backHomeButton).toBeVisible();
 });
