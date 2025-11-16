@@ -29,18 +29,18 @@ test('CT-OVERVIEW-001 — Cancelar ação de Overview', async ({ page }) => {
   await expect(page).toHaveURL(/.*checkout-step-one.html/);
 
   // 6) Preencher informações obrigatórias
-  await page.fill('#first-name', 'Maria');
-  await page.fill('#last-name', 'Fernandes');
+  await page.fill('#first-name', 'Caio');
+  await page.fill('#last-name', 'Dias');
   await page.fill('#postal-code', '50000-000');
   await page.click('input[type="submit"]');
-  await expect(page).toHaveURL(/.*checkout-step-two.html/);
 
   // 7) Confirmar que estamos na página de Overview
+  await expect(page).toHaveURL(/.*checkout-step-two.html/);
   await expect(page.locator('.summary_info')).toBeVisible();
 
-  // 8) Clicar em “Cancel”
+  // 8) Cancelar a compra
   await page.click('button:has-text("Cancel")');
 
-  // 9) Resultado esperado: o usuário deve retornar à página de Checkout (etapa 1)
-  await expect(page).toHaveURL(/.*inventory.html|.*cart.html|.*checkout-step-one.html/);
+  // 9) Resultado esperado: o usuário deve retornar à página de Inventário
+  await expect(page).toHaveURL(/.*inventory.html/);
 });
