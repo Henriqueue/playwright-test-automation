@@ -1,6 +1,6 @@
-# Automation-WEB
+# Automação de teste com Playwright
 
-Este repositório contém testes automatizados para a plataforma da web.
+Este repositório contém testes automatizados para a plataforma de testes da Web.
 
 ## 🚀 Começando.
 
@@ -33,12 +33,11 @@ Siga estas etapas para configurar o ambiente de desenvolvimento:
 ## ⚙️ Executando os testes
 
 Para executar os testes, utilize o seguinte comando:
-
 \`\`\`bash
 npx playwright test
 \`\`\`
-## 📂 Estrutura do Projeto
 
+## 📂 Estrutura do Projeto
 O projeto está organizado da seguinte forma:
 
 - **/tests**: Contém todos os arquivos de teste.
@@ -49,4 +48,15 @@ O projeto está organizado da seguinte forma:
   - **/overview**: Testes de visão geral do sistema.
 
 
-> **Observação**: Este projeto está em desenvolvimento e novos testes estão sendo adicionados continuamente.
+<h3>Para execução com a estrutura do Playwright</h3>
+Para fazer a execução dos casos de testes com a estrutura do Playwright com sua IDE você vai precisar executar os seguintes comandos no Painel de comandos: 
+- **/npx playwright test
+Esse comando vai rodar os casos de teste e exibir os resultados dos que passaram e os que falharam, no painel de comando. Álem disso, vai criar uma pasta de resultados de testes que mostrará os resultados mais detalhadamente.
+
+- **/npx playwright test --ui
+Esse comando vai rodar e exibir os resultados na inteface visual do própio Playwright. Nessa interface poderá acompanhar o caminho dos testes até o objetivo dos casos na própria aplicação.
+
+- **/npx playwright test --headed
+Esse comando vai rodar toda a aplicação já testada num navegador Chromium. Caso algum teste falhe, a aplicação "quebra". Ou seja, demonstrará onde o teste falhou, tornando a automação dos testes mais precisa.
+
+<p>Agora com os casos de testes automatizados você pode seguir para as próximas etapas do desenvolvimento!</p>
